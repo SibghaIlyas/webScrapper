@@ -39,5 +39,19 @@ public class ExcelHelper {
         fos.close();
     }
 
+    public int getRowsCount(String sheetName) {
+        XSSFSheet sheet = workbook.getSheet(sheetName);
+        int temp = 1;
+        while(true) {
+            XSSFRow row = sheet.getRow(temp);
+            XSSFCell cell = row.getCell(1);
+            String value = cell.getStringCellValue();
+            if(value.isEmpty()) {
+                return cell.getRowIndex();
+            }
+            else temp++;
+        }
+    }
+
 
 }
