@@ -12,7 +12,7 @@ import java.security.GeneralSecurityException;
 import java.util.List;
 
 public class WebScrapper {
-    private int rowNo = 1;
+
     private String fetchedPrice = null;
     private String range = "Products!I1:N1000";
     private int totalRows = 0;
@@ -22,9 +22,9 @@ public class WebScrapper {
     }
 
     public void amazonWebScrapper() throws IOException, InterruptedException, GeneralSecurityException {
-
+        int rowNo = 1;
         WebDriver driver = new ChromeDriver();
-        WebDriverWait wait = new WebDriverWait(driver, 15);
+        WebDriverWait wait = new WebDriverWait(driver, 10);
         ValueRange sheetDataResponse = GoogleSpreadsheetHelper.getData(range);
         List<List<Object>> dataList = sheetDataResponse.getValues();
         totalRows = GoogleSpreadsheetHelper.nonEmptyRowsCount(sheetDataResponse, range);
@@ -65,7 +65,7 @@ public class WebScrapper {
                         String seeAllOption = "//a[contains(text(),'See All Buying Options')]";
                         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(seeAllOption)));
                         driver.findElement(By.xpath(seeAllOption)).click();
-                        Thread.sleep(2000);
+                        Thread.sleep(10000);
 
                         JavascriptExecutor js = (JavascriptExecutor)driver;
                         fetchedPrice = (String) js.executeScript("return document.getElementById('aod-price-1').childNodes[1].childNodes[0].innerText");
@@ -86,7 +86,7 @@ public class WebScrapper {
     }
 
     public void walmartWebScrapper() throws IOException, InterruptedException, GeneralSecurityException {
-
+        int rowNo = 1;
         ValueRange sheetDataResponse = GoogleSpreadsheetHelper.getData(range);
         List<List<Object>> dataList = sheetDataResponse.getValues();
         totalRows = GoogleSpreadsheetHelper.nonEmptyRowsCount(sheetDataResponse, range);

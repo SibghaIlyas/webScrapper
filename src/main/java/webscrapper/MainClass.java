@@ -11,7 +11,7 @@ public class MainClass {
 
     public static void main(String[] arg) throws IOException, InterruptedException, GeneralSecurityException {
         WebScrapper webScrapper = new WebScrapper();
-//        webScrapper.amazonWebScrapper();
+        webScrapper.amazonWebScrapper();
         webScrapper.walmartWebScrapper();
 
     }
