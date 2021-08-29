@@ -93,11 +93,12 @@ public class WebScrapper {
         System.out.println(totalRows);
         System.out.println(dataList);
         System.setProperty("webdriver.chrome.driver", "chromedriver");
+        WebDriver driver = new ChromeDriver();
 
         System.out.println("total rows in excel: " + totalRows);
         while(rowNo < totalRows) {
             Thread.sleep(1000);
-            WebDriver driver = new ChromeDriver();
+
             WebDriverWait wait = new WebDriverWait(driver, 15);
             driver.manage().window().maximize();
             driver.manage().deleteAllCookies(); //delete all cookies
@@ -113,7 +114,6 @@ public class WebScrapper {
 
             } catch (Exception e) {
                 System.out.println(e);
-                Thread.sleep(900000);
                 fetchedPrice = "Price not found / url not present";
 
             }
@@ -121,7 +121,6 @@ public class WebScrapper {
             System.out.println(fetchedPrice);
             GoogleSpreadsheetHelper.updatePriceOnSheet(range,fetchedPrice, sheetDataResponse, rowNo, "walmart");
             rowNo++;
-            driver.quit();
         }
 
     }
