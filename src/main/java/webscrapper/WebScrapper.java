@@ -1,27 +1,19 @@
 package webscrapper;
 
 import com.google.api.services.sheets.v4.model.ValueRange;
-import helpers.ExcelHelper;
 import helpers.GoogleSpreadsheetHelper;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.Iterator;
 import java.util.List;
 
 public class WebScrapper {
     private int rowNo = 1;
     private String fetchedPrice = null;
-    private WebDriver driver = new ChromeDriver();
-    private WebDriverWait wait = new WebDriverWait(driver, 15);
     private String range = "Products!I1:N1000";
     private int totalRows = 0;
 
@@ -31,6 +23,8 @@ public class WebScrapper {
 
     public void amazonWebScrapper() throws IOException, InterruptedException, GeneralSecurityException {
 
+        WebDriver driver = new ChromeDriver();
+        WebDriverWait wait = new WebDriverWait(driver, 15);
         ValueRange sheetDataResponse = GoogleSpreadsheetHelper.getData(range);
         List<List<Object>> dataList = sheetDataResponse.getValues();
         totalRows = GoogleSpreadsheetHelper.nonEmptyRowsCount(sheetDataResponse, range);
@@ -92,6 +86,7 @@ public class WebScrapper {
     }
 
     public void walmartWebScrapper() throws IOException, InterruptedException, GeneralSecurityException {
+
         ValueRange sheetDataResponse = GoogleSpreadsheetHelper.getData(range);
         List<List<Object>> dataList = sheetDataResponse.getValues();
         totalRows = GoogleSpreadsheetHelper.nonEmptyRowsCount(sheetDataResponse, range);
@@ -102,33 +97,33 @@ public class WebScrapper {
         System.out.println("total rows in excel: " + totalRows);
         while(rowNo < totalRows) {
             Thread.sleep(1000);
-
+            WebDriver driver = new ChromeDriver();
+            WebDriverWait wait = new WebDriverWait(driver, 15);
+            driver.manage().window().maximize();
+            driver.manage().deleteAllCookies(); //delete all cookies
             //get price
             try {
                 String url = dataList.get(rowNo).get(5).toString();
                 System.out.println("url: " + url);
-                driver.navigate().to(url);
+                driver.get(url);
+
                 String priceSelector = "//span[@id='price']/div/span[1]/span/span[1]";
                 wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(priceSelector)));
                 fetchedPrice = driver.findElement(By.xpath(priceSelector)).getText();
 
             } catch (Exception e) {
                 System.out.println(e);
-                fetchedPrice = "Price could not be found";
+                Thread.sleep(900000);
+                fetchedPrice = "Price not found / url not present";
 
             }
 
             System.out.println(fetchedPrice);
             GoogleSpreadsheetHelper.updatePriceOnSheet(range,fetchedPrice, sheetDataResponse, rowNo, "walmart");
             rowNo++;
+            driver.quit();
         }
 
     }
 
-    public void saveAndQuit() throws IOException {
-        ExcelHelper excelHelper = new ExcelHelper();
-        int totalRows = excelHelper.getRowsCount("Products");
-        excelHelper.saveFile();
-        driver.quit();
-    }
 }
